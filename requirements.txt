@@ -2,3 +2,4 @@ requests
 bs4
 json
 argparse
+pyperclip

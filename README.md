@@ -8,16 +8,18 @@ Get douabn information to a summary text.
 
 - 输出简介文本
 - 输出Json格式信息
+- 将输出信息复制到前剪切板
 
 ## Useage(使用方法)
 
 ### 参数说明
 
--h, --help            show this help message and exit
--u URL, --url URL     Input your douban-url
+-h, --help            show this help message and exit  
+-u URL, --url URL     Input your douban-url（豆瓣链接）  
 -c COOKIE, --cookie COOKIE
-    Input your douban-cookie  
--j, --json            Output as json format  
+    Input your douban-cookie（豆瓣cookie，用于抓取部分只有登录才能看到的资源）  
+-j, --json            Output as json format（输出json格式的结果）  
+-cp, --copy        Copy the output to the clipboard(将结果添加到剪切板)  
 
 ### 示例
 

@@ -51,26 +51,26 @@ di -u https://movie.douban.com/subject/26353671/ -c 'your cookie'
 
 2.在PowerShell（Windows）/ Terminal.app（MacOS）/ command-line interface（Linux）下输入
 
-```bash
+```shell
 pip3 install doubaninfo
 ```
 
 Or
 
-```bash
+```shell
 pip install doubaninfo
 ```
 
 ## Upgrade 更新方法
 
 ```shell
-pip3 install --upgrade auto_upload
+pip3 install --upgrade doubaninfo
 ```
 
 Or
 
 ```shell
-pip install --upgrade auto_upload
+pip install --upgrade doubaninfo
 ```
 
 ## Reference

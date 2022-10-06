@@ -30,13 +30,13 @@ def getdoubaninfo(url:str='',cookie:str='',cp:bool=False,ret_val:bool=False):
         raise Exception('豆瓣链接填写错误')
     res=page_parse.info()
     if ret_val:
-        return res
+        return page_parse
     print('\n'+res)
     if cp:
         pyperclip.copy(res)
 
 
-def getdoubaninfo_json(url:str='',cookie:str=''):
+def getdoubaninfo_json(url:str='',cookie:str='',cp:bool=False):
     if 'movie.douban.com' in url:
         if cookie.strip()=='':
             page_parse=MoviePageParse(movie_url=url)
@@ -49,4 +49,7 @@ def getdoubaninfo_json(url:str='',cookie:str=''):
             page_parse=BookPageParse(book_url=url,cookie=cookie)
     else:
         raise Exception('豆瓣链接填写错误')
-    print( page_parse.parse())
+    res=page_parse.parse()
+    print(str(res))
+    if cp:
+        pyperclip.copy(str(res))

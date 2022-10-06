@@ -9,6 +9,14 @@ Get douabn information to a summary text.
 - 输出简介文本
 - 输出Json格式信息
 - 自动将输出信息复制到前剪切板
+- 支持适用cookie抓取部分只有登录豆瓣才能看到的资源信息  
+- 支持Python调用  
+  
+## Usage Scenario（适用场景）
+
+- 抓取到只有登录豆瓣才能看到的资源信息  
+- 在Python等脚本中获取豆瓣简介/Json格式豆瓣信息  
+- 在命令行/Shell中获取豆瓣简介/Json格式豆瓣信息  
 
 ## Useage(使用方法)
 

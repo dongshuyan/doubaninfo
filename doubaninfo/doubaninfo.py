@@ -15,7 +15,7 @@ def readargs():
     return args
 
 
-def getdoubaninfo(url:str='',cookie:str='',cp:bool=False):
+def getdoubaninfo(url:str='',cookie:str='',cp:bool=False,ret_val:bool=False):
     if 'movie.douban.com' in url:
         if cookie.strip()=='':
             page_parse=MoviePageParse(movie_url=url)
@@ -29,6 +29,8 @@ def getdoubaninfo(url:str='',cookie:str='',cp:bool=False):
     else:
         raise Exception('豆瓣链接填写错误')
     res=page_parse.info()
+    if ret_val:
+        return res
     print('\n'+res)
     if cp:
         pyperclip.copy(res)

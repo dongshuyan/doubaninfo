@@ -17,13 +17,15 @@ class BookPageParse:
             raise Exception('豆瓣链接与豆瓣id至少输入一个')
         elif book_id==0:
             try:
-                book_id=int(re.findall('/subject/(\d+)/',book_url)[0])
+                book_id=int(re.findall('/subject/(\d+)',book_url)[0])
             except Exception as err:
                 raise Exception('豆瓣链接填写错误')
             book_url='https://book.douban.com/subject/' + str(book_id)+'/'
         elif book_url.strip()=='':
             book_url='https://book.douban.com/subject/' + str(book_id)+'/'
-        
+        else:
+            book_url='https://book.douban.com/subject/' + str(book_id)+'/'
+
         self.book_id = book_id
         self.book_url = book_url
         self.cookie = cookie

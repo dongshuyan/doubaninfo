@@ -11,6 +11,7 @@ __pycache__/
 setup.py
 MANIFEST.in
 main.py
+introduction.txt
 
 
 # C extensions

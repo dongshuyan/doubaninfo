@@ -19,7 +19,7 @@ class MoviePageParse:
             raise Exception('豆瓣链接与豆瓣id至少输入一个')
         elif movie_id==0:
             try:
-                movie_id=int(re.findall('/subject/(\d+)/',movie_url)[0])
+                movie_id=int(re.findall('/subject/(\d+)',movie_url)[0])
             except Exception as err:
                 raise Exception('豆瓣链接填写错误')
             movie_url='https://movie.douban.com/subject/' + str(movie_id)+'/'

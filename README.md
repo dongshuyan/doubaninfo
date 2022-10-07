@@ -18,6 +18,11 @@ Get douabn information to a summary text.
 - 在Python等脚本中获取豆瓣简介/Json格式豆瓣信息
 - 在命令行/Shell中获取豆瓣简介/Json格式豆瓣信息
 
+## 更新日志  
+- 20221007 去掉无法识别的字符  
+- 20221007 修复豆瓣链接中id后必须有/的bug  
+
+
 ## Useage(使用方法)
 
 ### 1.命令行直接使用

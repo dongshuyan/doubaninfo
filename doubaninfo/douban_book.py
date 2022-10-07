@@ -4,6 +4,11 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
+def cleanstr(str1):
+    for item in str1:
+        if ord(item)>55203:
+            str1=str1.replace(item,'')
+    return str1
 
 class BookPageParse:
     def __init__(self, book_id:int = 0, book_url:str = '',cookie:str = ''):
@@ -46,7 +51,7 @@ class BookPageParse:
                 'sec-ch-ua-mobile': '?0' ,
                 'sec-ch-ua-platform': '"macOS"',
             }
-        book_info_html = requests.get(book_url,headers=headers,timeout=20).text
+        book_info_html = cleanstr(requests.get(book_url,headers=headers,timeout=20).text)
         self.book_info_html=book_info_html
         self.book_soup = BeautifulSoup(self.book_info_html, 'lxml')
 

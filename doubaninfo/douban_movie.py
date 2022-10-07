@@ -5,6 +5,11 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+def cleanstr(str1):
+    for item in str1:
+        if ord(item)>55203:
+            str1=str1.replace(item,'')
+    return str1
 
 class MoviePageParse:
     def __init__(self, movie_id:int = 0, movie_url:str = '',cookie:str = ''):
@@ -48,7 +53,7 @@ class MoviePageParse:
                 'sec-ch-ua-mobile': '?0' ,
                 'sec-ch-ua-platform': '"macOS"',
             }
-        movie_info_html = requests.get(movie_url,headers=headers,timeout=20).text
+        movie_info_html = cleanstr(requests.get(movie_url,headers=headers,timeout=20).text)
         self.movie_info_html=movie_info_html
         self.film_soup = BeautifulSoup(self.movie_info_html, 'lxml')
 
@@ -483,14 +488,17 @@ class MoviePageParse:
             }
             awards.append(tempitem)
         return awards
+
+    
+    
     def parse(self):
         """
         获取电影信息（包含电视剧、综艺、动漫、纪录片、短片）
         :return:
         """
         #name = self._get_movie_name()  # 电影姓名
-        names =self._get_movie_names()
-        year=self._get_movie_year()
+        names =self._get_movie_names()  # 电影各种名字
+        year=self._get_movie_year()  # 电影年份
         image_url = self._get_movie_image_url()  # 电影图片链接
         directors = self._get_movie_directors()  # 电影导演
         writers = self._get_movie_writers()  # 电影编剧
@@ -504,9 +512,9 @@ class MoviePageParse:
         other_names = self._get_movie_other_names()  # 电影其他名称
         summary = self._get_movie_summary()  # 电影简介
         rating = self._get_movie_rating()  # 电影评分
-        imdb= self._get_movie_imdb()
-        imdbrating=self._get_movie_imdbscore()
-        awards = self._get_movie_awards()
+        imdb= self._get_movie_imdb()  # 电影imdb链接
+        imdbrating=self._get_movie_imdbscore()  # 电影imdb分数
+        awards = self._get_movie_awards()  # 电影奖项
 
 
         movie_info_json = {

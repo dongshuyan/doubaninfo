@@ -308,7 +308,7 @@ class BookPageParse:
             price = ''
         return price
 
-    def _get_book_content_abstract(self):
+    def _get_book_content_abstract_old(self):
         """
         得到图书内容简介
         :return:
@@ -316,11 +316,31 @@ class BookPageParse:
         try:
             try:
                 content_abstract = str(self.book_soup.find('span', class_='all hidden').text)
-                content_abstract = content_abstract.replace(' ', '').replace('\n', '').replace('\u3000', '')
+                #content_abstract = content_abstract.replace(' ', '').replace('\n', '').replace('\u3000', '')
                 content_abstract = str(re.sub('.*;}', '', content_abstract))
             except:
                 content_abstract = str(self.book_soup.find_all('div', class_='intro')[0].text)
-                content_abstract = content_abstract.replace(' ', '').replace('\n', '').replace('\u3000', '')
+                #content_abstract = content_abstract.replace(' ', '').replace('\n', '').replace('\u3000', '')
+        except Exception as err:
+            content_abstract = ''
+        return content_abstract
+
+    def _get_book_content_abstract(self):
+        """
+        得到图书内容简介
+        :return:
+        """
+        try:
+            try:
+                content_abstract =''
+                contents= self.book_soup.find_all('div', class_='related_info')[0].find_all('div', class_='intro')[0]
+                for item in contents.find_all('p'):
+                    if not ('展开全部' in str(item.text)):
+                        content_abstract=content_abstract+'\n'+str(item.text)
+                content_abstract = str(re.sub('.*;}', '', content_abstract))
+            except:
+                content_abstract = str(self.book_soup.find_all('div', class_='intro')[0].text)
+                #content_abstract = content_abstract.replace(' ', '').replace('\n', '').replace('\u3000', '')
         except Exception as err:
             content_abstract = ''
         return content_abstract
@@ -341,6 +361,7 @@ class BookPageParse:
                 catalog = catalog.replace(' ', '')
         except Exception as err:
             catalog = ''
+        catalog=catalog.replace('(收起)','').replace('(更多)','')
         return catalog
 
     def _get_book_rating(self):

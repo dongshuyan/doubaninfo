@@ -12,7 +12,7 @@ setup.py
 MANIFEST.in
 main.py
 introduction.txt
-
+help_file/
 
 # C extensions
 *.so

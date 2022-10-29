@@ -51,6 +51,7 @@ class BookPageParse:
                 'sec-ch-ua-mobile': '?0' ,
                 'sec-ch-ua-platform': '"macOS"',
             }
+        logger.info('正在抓取豆瓣信息,请稍等...')
         book_info_html = cleanstr(requests.get(book_url,headers=headers,timeout=20).text)
         self.book_info_html=book_info_html
         self.book_soup = BeautifulSoup(self.book_info_html, 'lxml')

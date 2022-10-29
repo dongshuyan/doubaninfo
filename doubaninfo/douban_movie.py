@@ -4,6 +4,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 import json
+from loguru import logger
 
 def cleanstr(str1):
     for item in str1:
@@ -53,6 +54,7 @@ class MoviePageParse:
                 'sec-ch-ua-mobile': '?0' ,
                 'sec-ch-ua-platform': '"macOS"',
             }
+        logger.info('正在抓取豆瓣信息,请稍等...')
         movie_info_html = cleanstr(requests.get(movie_url,headers=headers,timeout=20).text)
         self.movie_info_html=movie_info_html
         self.film_soup = BeautifulSoup(self.movie_info_html, 'lxml')
@@ -78,8 +80,13 @@ class MoviePageParse:
         """
         try:
             chinesename = self.film_soup.title.text.replace('(豆瓣)','').strip()
+            if len(re.findall('第.*季',chinesename))>0:
+                seasonstr=re.findall('第.*季',chinesename)[0]
+            else:
+                seasonstr=''
         except Exception as err:
             chinesename = ''
+            seasonstr=''
         
         try:
             originalTitle = self._get_movie_name().replace(chinesename,'').strip()
@@ -89,17 +96,18 @@ class MoviePageParse:
         akaTitles=[]
         try:
             akaTitles=self.film_soup.find('span', class_='pl',text=re.compile("又名")).next_sibling.text.strip().split(' / ')
+            akaTitles=[item.strip() for item in akaTitles]
         except Exception as err:
             akaTitles = []
 
         if originalTitle=='':
-            originalTitle=chinesename
+            originalTitle=chinesename.strip()
             if len(akaTitles)>0:
                 translatedTitle=akaTitles[0]
             else:
-                translatedTitle=chinesename
+                translatedTitle=chinesename.strip()
         else:
-            translatedTitle=chinesename
+            translatedTitle=chinesename.strip()
         
         
 
@@ -108,6 +116,7 @@ class MoviePageParse:
             'originalTitle': originalTitle,
             'translatedTitle': translatedTitle,
             'akaTitles': akaTitles,
+            'seasonstr': seasonstr,
         }
         return names
 
@@ -138,12 +147,29 @@ class MoviePageParse:
             return imdbrating
 
         url='http://p.media-imdb.com/static-content/documents/v1/title/'+imdb+'/ratings%3Fjsonp=imdb.rating.run:imdb.api.title.ratings/data.json'
-        user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.53'
+        user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.24'
         headers={
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+            'Cache-Control': 'max-age=0',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
             'referrer': 'http://p.media-imdb.com/',
             'User-Agent': user_agent,
         }
-        r= requests.get(url,headers=headers,timeout=20)
+        logger.info('正在抓取imdb分数')
+        logger.debug('url='+url)
+        try:
+            r= requests.get(url,headers=headers,timeout=10)
+        except Exception as err:
+            logger.info('正在抓取imdb分数失败,请稍等...')
+            rating=0
+            ratingCount=0
+            imdbrating={
+                'rating': rating,
+                'ratingCount': ratingCount,
+            }
+            return imdbrating
         
         
         rating=0
@@ -168,7 +194,7 @@ class MoviePageParse:
         """
         获取电影年份
         :param film_soup:
-        :return:
+        :return: int类型年份
         """
         try:
             year = str(self.film_soup.find('span', class_='year').text)
@@ -210,8 +236,7 @@ class MoviePageParse:
             film_info = str(self.film_soup.find('div', {'id': 'info'}))
             directors = []
             directors_text = re.search(r'导演</span>: <span class="attrs">.*</span><br/>', film_info).group()
-            directors_text = directors_text.replace('导演</span>: <span class="attrs">', '').replace('</span><br/>',
-                                                                                                   '').replace(
+            directors_text = directors_text.replace('导演</span>: <span class="attrs">', '').replace('</span><br/>',                                                                                                  '').replace(
                 '</span>', '')
             directors_text_list = directors_text.split('</a>')
             while '' in directors_text_list:
@@ -240,8 +265,7 @@ class MoviePageParse:
             film_info = str(self.film_soup.find('div', {'id': 'info'}))
             writers = []
             writers_text = re.search(r'编剧</span>: <span class="attrs">.*</span><br/>', film_info).group()
-            writers_text = writers_text.replace('编剧</span>: <span class="attrs">', '').replace('</span><br/>',
-                                                                                               '').replace(
+            writers_text = writers_text.replace('编剧</span>: <span class="attrs">', '').replace('</span><br/>',                                                                             '').replace(
                 '</span>', '')
             writers_text_list = writers_text.split('</a>')
             while '' in writers_text_list:
@@ -268,8 +292,7 @@ class MoviePageParse:
             film_info = str(self.film_soup.find('div', {'id': 'info'}))
             actors = []
             actors_text = re.search(r'主演</span>: <span class="attrs">.*</span><br/>', film_info).group()
-            actors_text = actors_text.replace('主演</span>: <span class="attrs">', '').replace('</span><br/>',
-                                                                                             '').replace(
+            actors_text = actors_text.replace('主演</span>: <span class="attrs">', '').replace('</span><br/>',                                                                         '').replace(
                 '</span>', '')
             actors_text_list = actors_text.split('</a>')
             while '' in actors_text_list:
@@ -472,6 +495,7 @@ class MoviePageParse:
                 'sec-ch-ua-mobile': '?0' ,
                 'sec-ch-ua-platform': '"macOS"',
             }
+        logger.info('正在抓取奖项信息,请稍等...')
         r=requests.get(awards_url,headers=headers,timeout=20)
         award_soup = BeautifulSoup(r.text, 'lxml')
         awardlist=award_soup.find_all('div',class_='awards')
@@ -547,7 +571,9 @@ class MoviePageParse:
             douban_info = douban_info+"[img]" + data['image_url'].replace(imgurl[0],'img9.doubanio.com') + "[/img]\n"
             #self.picture=data['pic']
         if (data['names']['translatedTitle']):
-            douban_info = douban_info+ "\n◎译\u3000\u3000名　" + '/'.join([data['names']['translatedTitle']]+data['names']['akaTitles']);
+            douban_info = douban_info+ "\n◎译\u3000\u3000名　" + '/'.join(list(set([data['names']['translatedTitle']]+data['names']['akaTitles'])));
+        if (data['names']['seasonstr']):
+            douban_info = douban_info+ "\n◎季\u3000\u3000数　" +  data['names']['seasonstr']
         if (data['names']['originalTitle']) :
             douban_info += "\n◎片\u3000\u3000名　" + data['names']['originalTitle']
         if (data['year']):

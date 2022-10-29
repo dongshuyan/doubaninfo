@@ -19,6 +19,7 @@ Get douabn information to a summary text.
 - 在命令行/Shell中获取豆瓣简介/Json格式豆瓣信息
 
 ## 更新日志  
+- 20221029 修复了抓取imdb分数超时的bug
 - 20221007 更改了获取书籍内容的算法
 - 20221007 去掉无法识别的字符  
 - 20221007 修复豆瓣链接中id后必须有/的bug  

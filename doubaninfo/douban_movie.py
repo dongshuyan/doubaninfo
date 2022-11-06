@@ -158,7 +158,7 @@ class MoviePageParse:
             'User-Agent': user_agent,
         }
         logger.info('正在抓取imdb分数')
-        logger.debug('url='+url)
+        #logger.debug('url='+url)
         try:
             r= requests.get(url,headers=headers,timeout=10)
         except Exception as err:

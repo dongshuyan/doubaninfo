@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from loguru import logger
+import time
 
 def cleanstr(str1):
     for item in str1:
@@ -55,7 +56,21 @@ class MoviePageParse:
                 'sec-ch-ua-platform': '"macOS"',
             }
         logger.info('正在抓取豆瓣信息,请稍等...')
-        movie_info_html = cleanstr(requests.get(movie_url,headers=headers,timeout=20).text)
+        get_success=0
+        get_time=0
+        while get_success==0:
+            get_time+=1
+            if get_time>5:
+                raise Exception('获取豆瓣info出错，请尝试能否正常打开豆瓣')
+            try:
+                res=requests.get(movie_url,headers=headers,timeout=20)
+                get_success=1
+            except Exception as r:
+                get_success=0
+                logger.warning('抓取豆瓣info错误，一秒后重试，原因: %s' %(r))
+                time.sleep(1)
+
+        movie_info_html = cleanstr(res.text)
         self.movie_info_html=movie_info_html
         self.film_soup = BeautifulSoup(self.movie_info_html, 'lxml')
 
@@ -396,7 +411,7 @@ class MoviePageParse:
             episodes_text = episodes_text.replace('集数:</span>', '').replace('<br/>', '').replace(' ', '')
             episodes = episodes_text
         except Exception as err:
-            episodes = '1'
+            episodes = '暂无信息'
         return episodes
 
     def _get_movie_durations(self):
@@ -496,7 +511,11 @@ class MoviePageParse:
                 'sec-ch-ua-platform': '"macOS"',
             }
         logger.info('正在抓取奖项信息,请稍等...')
-        r=requests.get(awards_url,headers=headers,timeout=20)
+        try:
+            r=requests.get(awards_url,headers=headers,timeout=20)
+        except Exception as r:
+            logger.error('豆瓣奖项抓取发生错误: %s' %(r))
+            return []
         award_soup = BeautifulSoup(r.text, 'lxml')
         awardlist=award_soup.find_all('div',class_='awards')
         awards=[]
